@@ -55,6 +55,7 @@ class TickerBase():
         self._major_holders = None
         self._institutional_holders = None
         self._isin = None
+        self._analysis = None
 
         self._calendar = None
         self._expirations = {}
@@ -383,6 +384,12 @@ class TickerBase():
 
         self._fundamentals = True
 
+        # analysis
+        url = "{}/{}/analysis".format(self._scrape_url, self.ticker)
+        data = utils.get_json(url, proxy)
+        self._analysis = data
+
+
     def get_recommendations(self, proxy=None, as_dict=False, *args, **kwargs):
         self._get_fundamentals(proxy)
         data = self._recommendations
@@ -514,3 +521,10 @@ class TickerBase():
 
         self._isin = data.split(search_str)[1].split('"')[0].split('|')[0]
         return self._isin
+
+    def get_analysis(self, as_dict=False, proxy=None):
+        self._get_fundamentals(proxy)
+        data = self._analysis
+        if as_dict:
+            return data.to_dict()
+        return data
